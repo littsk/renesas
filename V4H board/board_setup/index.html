@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>board setup - My Docs</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "board setup";
+        var mkdocs_page_input_path = "V4H board/board_setup.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <script src="../../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> My Docs
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">V4H Board</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">board setup</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#official-reference">official reference</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setup">setup</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#step1">step1</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#setp2">setp2</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-3">step 3</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#step-4">Step 4</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../sdk_setup/">sdk setup</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">My Docs</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" alt="Docs"></a> &raquo;</li>
+          <li>V4H Board &raquo;</li><li>board setup</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="v4h-setup">V4H Setup</h1>
+<h2 id="official-reference">official reference</h2>
+<pre><code>..
+├── system files
+├── README.md
+├── demo
+├── docs
+├── renesas
+│   ├── RENESAS_RCV3HV3MV4H_YoctoStartupGuide_UME.pdf  # this is the official documentation
+└── tmp
+</code></pre>
+<h2 id="setup">setup</h2>
+<h4 id="step1">step1</h4>
+<p>create the tftp server for the v4h to get the <font color="#dd0000">necessary file (kernel image + dtb)</font> via ethernet.</p>
+<ol>
+<li>
+<p><strong>Install tftpd-hpa with sudo privilege</strong></p>
+<pre><code> $ sudo apt install tftpd-hpa -y
+</code></pre>
+<p>Note: -y flag means to assume yes and silently install, without asking you questions in most cases. Once the installation is complete, you will be able to download files from the TFTP server.
+ The default configuration file for tftpd-hpa is /etc/default/tftpd-hpa.
+ The default root directory where files will be stored is /srv/tftp
+ If you want to upload to the TFTP server, please continue next step.</p>
+</li>
+<li>
+<p><strong>Edit tftpd-hpa configuration file</strong></p>
+<pre><code> $ sudo vi /etc/default/tftpd-hpa
+</code></pre>
+<p>And change the following line to give R/W permission to TFTP_DIRECTORY folder: 
+ [Old] TFTP_OPTIONS="--secure"
+ [New] TFTP_OPTIONS="--secure --create"
+ and save the file and exit the vi editor.</p>
+</li>
+<li>
+<p><strong>Restart the tftpd-hpa service</strong><br />
+     To make the changes take effect, tftpd-hpa service must be restarted. This can be accomplished by performing the following command.</p>
+<pre><code> $ sudo service tftpd-hpa restart
+</code></pre>
+<p>At this point you should now have a TFTP server that allows you to both download and upload files.</p>
+</li>
+</ol>
+<h4 id="setp2">setp2</h4>
+<p>to boot an embedded system over NFS, an NFS server must be available on the local network. First, we need to install the NFS server. Once the server has been installed, export a directory to use as the root filesystem by setting in /etc/exports file. This document assumes that the root filesystem for the board will be located at /export/rfs on NFS server.
+Note: Make sure you are <strong>connected to the internet</strong>. If there is an error, try apt update -y to update your application repository database.</p>
+<ol>
+<li>
+<p><strong>Install the NFS kernel server package and rpcbind. with sudo privilege</strong></p>
+<pre><code> $ sudo apt install nfs-kernel-server
+ $ sudo apt install rpcbind
+</code></pre>
+<p>This installs additional packages such as keyutils, nfs-common, rpcbind, and other dependencies required for the NFS server to function as expected.</p>
+</li>
+<li>
+<p><strong>Configuring NFS Server</strong><br />
+     NFS server's shares are configured in the /etc/exports file. Each share takes a list of option names to configure its behavior. Before configuring the NFS server, the following decisions need to be made (and a list of options created) based on the intended use(s) of the NFS share being created:</p>
+<ul>
+<li>Do NFS clients need the ability to write to the NFS share? If so, it needs to be exported rw. Otherwise, export it as ro</li>
+<li>If the filesystem will be writeable, is performance or data integrity more important? If performance, async will provide more performance at the risk of lost or corrupt data should the NFS server shut down unexpectedly during a write operation. Otherwise, sync should be used.</li>
+<li>Is reliability or security more important? If reliability is, use no_subtree_check. Otherwise, use subtree_check.</li>
+<li>Is user level access control required? If not, getting the NFS server working is much simpler with the no_root_squash option.</li>
+</ul>
+<p>Here is an example of the /etc/exports file that to export the /export/rfs directory to all machines, writeable, with reliability and performance options turned on</p>
+<pre><code> $ sudo vi /etc/exports
+</code></pre>
+<p>And modify as follow</p>
+<p><strong>/export/rfs *(rw,async,no_root_squash)</strong></p>
+</li>
+<li>
+<p><strong>Notify the NFS server after making any changes to the export file</strong></p>
+<pre><code> $ exportfs -a
+</code></pre>
+</li>
+<li>
+<p><strong>Restart the nfs Service</strong></p>
+<pre><code> $ sudo service nfs-kernel-server restart
+</code></pre>
+<p>Now users can configure the client to boot from NFS server.</p>
+</li>
+</ol>
+<h4 id="step-3">step 3</h4>
+<p>Prepare filesystem and kernel image + dtb</p>
+<ol>
+<li>
+<p><strong>Store Kernel image and device tree to TFTP root directory</strong></p>
+<pre><code> $ cp Image &lt;Device_Tree&gt; /srv/tftp      Linux Host PC
+</code></pre>
+<p>Note that maybe your TFTP root directory is not like preceding command line shows. And you can just move the file to your own TFTP root directory. Besides, The Image and <Device_Tree> file are in the directory shows following.</p>
+<pre><code> ..
+ ├── system files
+ │   ├── Image
+ │   ├── Image-r8a779g0-whitehawk.dtb
+ ├── README.md
+ ├── demo
+ ├── docs
+ ├── renesas
+ └── tmp
+</code></pre>
+</li>
+<li>
+<p><strong>Store filesystem (rcar-image-adas-{SoC}.tar.bz2) to root directory of NFS server, and extract it as follows</strong></p>
+<pre><code> $ cp rcar-image-adas-{SoC}..tar.bz2 /export/rfs $ cd /export/frs
+ $ tar xvf rcar-image-adas-{SoC}..tar.bz2
+</code></pre>
+<p>Note that the file are in the directory shows following.</p>
+<pre><code> ..
+ ├── system files
+ │   ├── rcar-image-adas-v4h.tar.bz2
+ ├── README.md
+ ├── demo
+ ├── docs
+ ├── renesas
+ └── tmp
+</code></pre>
+</li>
+</ol>
+<h4 id="step-4">Step 4</h4>
+<p>then we can connect to the V4H board. we use <strong>ethernet cable</strong> to transfer data and <strong>micro usb cable (uart)</strong> as a tty terminal.</p>
+<ol>
+<li>
+<p><strong>Uart Startup</strong><br />
+  Connect the cable to the V4H board as follow:
+  <img alt="V4H cable connection" src="../../imgs/IMG_0262.jpg" /></p>
+<p>For uart software, here we recommend minicom in unix-like OS, but you can also use any other uart software. If you use minicom, this blog (https://blog.csdn.net/houxiaoni01/article/details/124173845) may can help you out. The uart configuration should be set taht:</p>
+<pre><code> Serial Device: /dev/ttyUSB0 (if you only connect one uart device, else you shoud chose the right device on you own)
+ baud rate: 921600
+ 8-bit data
+ parity: none
+ stop: 1 bit
+ flow control: none
+</code></pre>
+<p>Then toggle the yellow switch to power on the board and you will see the uart software has ouput.</p>
+</li>
+<li>
+<p><strong>Set U-Boot environment variables</strong><br />
+  Start U-Boot by board reset. Set and save environment variables in uart tty termial as follows.</p>
+<pre><code> =&gt; setenv ethaddr xx:xx:xx:xx:xx:xx
+ =&gt; setenv ipaddr 192.168.0.20
+ =&gt; setenv serverip 192.168.0.1
+ =&gt; setenv bootcmd 'tftp 0x48080000 Image;tftp 0x48000000 &lt;Device_Tree&gt;;booti 0x48080000 - 0x48000000'
+</code></pre>
+<p>Note: xx:xx:xx:xx:xx:xx is MAC address of Whitehawk, Condor, Eagle board which is printed to the sticker on CN3 port of each board.</p>
+</li>
+<li>
+<p><strong>Change the bootargs by U-Boot Save environment variables to persistent storage</strong><br />
+  To change bootargs which is passed to Kernel command in boot sequence, modify “bootargs” variable of U-Boot. Below command means mounting the root file system as read/write option via NFS server whose IP is 192.168.0.1, root directory is /export/rfs and the client IP is 192.168.0.20</p>
+<pre><code> =&gt; setenv bootargs 'rw root=/dev/nfs nfsroot=192.168.0.1:/export/rfs,nfsvers=3 ip=192.168.0.20:::::eth0 cma=560M clk_ignore_unused'
+ =&gt; saveenv
+</code></pre>
+</li>
+<li>
+<p><strong>Start Linux and login</strong><br />
+  After board reset, U-Boot is started. After countdown, Linux images are loaded, and boot messages are displayed. Finally, you can login with username 'root' and without passward. </p>
+</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../sdk_setup/" class="btn btn-neutral float-right" title="sdk setup">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="../sdk_setup/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme_extra.js" defer></script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
