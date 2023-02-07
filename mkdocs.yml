@@ -1,8 +1,11 @@
 site_name: My Docs
+theme: 
+    name: readthedocs
+
 
 nav:
     - Home: index.md
-    - Test: boardsetup.md
-    - Ap: niupi.md
+    - V4H Board:
+        - board setup: 'V4H board/board_setup.md'
+        - sdk setup: 'V4H board/sdk_setup.md'
 
-theme: readthedocs
